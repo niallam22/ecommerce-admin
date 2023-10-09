@@ -20,7 +20,7 @@ const formSchema = z.object({
 
 export const StoreModal = () => {
   const storeModal = useStoreModal();
-  const router = useRouter();
+  const router = useRouter(); //WHY?
 
   const [loading, setLoading] = useState(false);
 
