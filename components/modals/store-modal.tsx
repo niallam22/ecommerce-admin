@@ -10,7 +10,14 @@ import { useState } from "react";
 
 import { Modal } from "@/components/ui/modal";
 import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { 
+  Form, 
+  FormControl, 
+  FormDescription, 
+  FormField, 
+  FormItem, 
+  FormLabel, 
+  FormMessage } from "@/components/ui/form";
 import { useStoreModal } from "@/hooks/use-store-modal";
 import { Button } from "@/components/ui/button";
 
@@ -20,7 +27,7 @@ const formSchema = z.object({
 
 export const StoreModal = () => {
   const storeModal = useStoreModal();
-  const router = useRouter(); //WHY?
+  const router = useRouter(); //Y?
 
   const [loading, setLoading] = useState(false);
 
@@ -35,7 +42,7 @@ export const StoreModal = () => {
     try {
       setLoading(true);
       const response = await axios.post('/api/stores', values);
-      window.location.assign(`/${response.data.id}`);
+      window.location.assign(`/${response.data.id}`); //refreshes pages from the window directly which means it will be synced with the db. if using router from next some cases where db not in sync so modal is open in dashboard
     } catch (error) {
       toast.error('Something went wrong');
     } finally {
@@ -54,17 +61,17 @@ export const StoreModal = () => {
         <div className="space-y-4 py-2 pb-4">
           <div className="space-y-2">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)}>
+              <form onSubmit={form.handleSubmit(onSubmit)}> {/* handleSubmit is from react hook form and it runs the onSubmit function and provides values from the inputs*/}
                 <FormField
                   control={form.control}
                   name="name"
-                  render={({ field }) => (
+                  render={({ field }) => ( // render and field (ControllerRenderProps type click to see) are from react hook form and field passes the props onChange, onBlur, disabled, value, name, ref which are then spread and passed into the input element
                     <FormItem>
                       <FormLabel>Name</FormLabel>
                       <FormControl>
                         <Input disabled={loading} placeholder="E-Commerce" {...field} />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage /> {/* displayes error message */}
                     </FormItem>
                   )}
                 />
