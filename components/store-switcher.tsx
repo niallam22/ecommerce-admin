@@ -37,7 +37,7 @@ export default function StoreSwitcher({ className, items = [] }: StoreSwitcherPr
     label: item.name,
     value: item.id
   }));
-
+  //items are the store options
   const currentStore = formattedItems.find((item) => item.value === params.storeId);
 
   const [open, setOpen] = React.useState(false)
