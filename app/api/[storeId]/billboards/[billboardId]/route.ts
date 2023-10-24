@@ -39,7 +39,7 @@ export async function DELETE(
     if (!params.billboardId) {
       return new NextResponse("Billboard id is required", { status: 400 });
     }
-
+    //check user authorised to edit store
     const storeByUserId = await prismadb.store.findFirst({
       where: {
         id: params.storeId,
