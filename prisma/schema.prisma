@@ -32,7 +32,7 @@ model Billboard {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@index([storeId])
+  @@index([storeId]) //defines an index to speed up filtering by storId
 }
 
 model Category {
