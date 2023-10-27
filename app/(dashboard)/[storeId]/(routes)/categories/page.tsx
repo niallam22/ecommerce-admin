@@ -14,7 +14,7 @@ const CategoriesPage = async ({
     where: {
       storeId: params.storeId
     },
-    include: {
+    include: {//include realted billboard fields so billboard is accessible with categories
       billboard: true,
     },
     orderBy: {
