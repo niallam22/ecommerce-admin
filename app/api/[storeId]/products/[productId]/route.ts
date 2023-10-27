@@ -124,7 +124,8 @@ export async function PATCH(
     if (!storeByUserId) {
       return new NextResponse("Unauthorized", { status: 405 });
     }
-
+    
+    //first update and delete all images and then below add the new/updated list of images
     await prismadb.product.update({
       where: {
         id: params.productId

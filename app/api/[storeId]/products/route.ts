@@ -13,7 +13,7 @@ export async function POST(
     const body = await req.json();
 
     const { name, price, categoryId, colorId, sizeId, images, isFeatured, isArchived } = body;
-
+    //note no check needed for isFeatured or isArchived bc defualt in schema will be false if not included
     if (!userId) {
       return new NextResponse("Unauthenticated", { status: 403 });
     }
@@ -89,6 +89,7 @@ export async function GET(
   { params }: { params: { storeId: string } },
 ) {
   try {
+    //extract params from url to search db 
     const { searchParams } = new URL(req.url)
     const categoryId = searchParams.get('categoryId') || undefined;
     const colorId = searchParams.get('colorId') || undefined;
@@ -106,7 +107,7 @@ export async function GET(
         colorId,
         sizeId,
         isFeatured: isFeatured ? true : undefined,
-        isArchived: false,
+        isArchived: false, //don't return archived products to store
       },
       include: {
         images: true,

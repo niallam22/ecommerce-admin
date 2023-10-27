@@ -123,7 +123,7 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
                   <FormLabel>Background image</FormLabel>
                   <FormControl>
                     <ImageUpload 
-                      value={field.value ? [field.value] : []} 
+                      value={field.value ? [field.value] : []} //singular upload. to upload multiple use map to return array of url - see product form 
                       disabled={loading} 
                       onChange={(url) => field.onChange(url)}
                       onRemove={() => field.onChange('')}

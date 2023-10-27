@@ -89,7 +89,7 @@ model Order {
   @@index([storeId])
 }
 
-// Intermediary for a many-to-many relationship
+// Intermediary for a many-to-many relationship between Order and Product
 model OrderItem {
   id        String  @id @default(uuid())
   orderId   String  // Foreign Key to Order
@@ -107,7 +107,7 @@ model Size {
   store       Store     @relation("StoreToSize", fields: [storeId], references: [id])
   name        String
   value       String
-  products    Product[] // Relation to Product model
+  products    Product[] // 1 to many relation to Product model
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -130,7 +130,7 @@ model Color {
 model Image {
   id          String   @id @default(uuid())
   productId   String   // Foreign Key to Product
-  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade) //cascade allows deletion of product even if an image uses that product model
   url         String   // URL of the image
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
