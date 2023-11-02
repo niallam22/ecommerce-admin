@@ -15,7 +15,7 @@ export async function OPTIONS() {
 }
 
 export async function POST(
-  req: Request,
+  req: Request,//Request type is a HTTP req object provided by next
   { params }: { params: { storeId: string } }
 ) {
   const { productIds } = await req.json();
