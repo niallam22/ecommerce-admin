@@ -1,4 +1,5 @@
 "use client";
+
 import { RowSelection } from "@tanstack/react-table";
 
 import { DataTable } from "@/components/ui/data-table";

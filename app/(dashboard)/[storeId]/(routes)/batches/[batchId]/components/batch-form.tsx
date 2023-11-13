@@ -29,7 +29,7 @@ const formSchema = z.object({
   supplierName: z.string().min(1),
   stock: z.coerce.number().min(0),
 });
-//if product name doesnt exist throw error from client and api with message
+
 type BatchFormValues = z.infer<typeof formSchema>
 
 interface BatchFormProps {
