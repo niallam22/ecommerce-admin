@@ -22,16 +22,16 @@ export async function POST(
       return new NextResponse("ProductId is required", { status: 400 });
     }
 
-    if (!supplierCost) {
-      return new NextResponse("Supplier cost is required", { status: 400 });
+    if (supplierCost === undefined || supplierCost === null || supplierCost < 0) {
+      return new NextResponse("Supplier cost must be greater than or equal to 0", { status: 400 });
     }
-
-    if (!quantity) {
-      return new NextResponse("Purchase quantity is required", { status: 400 });
+    
+    if (quantity === undefined || quantity === null || quantity < 0) {
+      return new NextResponse("Purchase quantity must be greater than or equal to 0", { status: 400 });
     }
-
-    if (!stock) {
-      return new NextResponse("Remaining stock is required", { status: 400 });
+    
+    if (stock === undefined || stock === null || stock < 0) {
+      return new NextResponse("Remaining stock must be greater than or equal to 0", { status: 400 });
     }
 
     if (!supplierName) {

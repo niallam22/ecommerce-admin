@@ -6,10 +6,8 @@ import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
-import { Trash } from "lucide-react"
 import { Category, Color, Batch, Size, Product } from "@prisma/client"
 import { useParams, useRouter } from "next/navigation"
-import { format } from "date-fns";
 
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -22,22 +20,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Separator } from "@/components/ui/separator"
-import { Heading } from "@/components/ui/heading"
-import { AlertModal } from "@/components/modals/alert-modal"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
 import { ProductColumn } from "./columns";
-import prismadb from "@/lib/prismadb";
-import { formatter } from "@/lib/utils";
-import { ProductsSearchTable } from "./product-search-table"
 import { Subheading } from "@/components/ui/subheading"
 
 const formSchema = z.object({
-  supplierCost: z.coerce.number().min(1),//coerce required bc price is a decimal in schema
-  quantity: z.coerce.number().min(1),
+  supplierCost: z.coerce.number().min(0),//coerce required bc price is a decimal in schema
+  quantity: z.coerce.number().min(0),
   supplierName: z.string().min(1),
-  stock: z.coerce.number().min(1),
+  stock: z.coerce.number().min(0),
 });
 //!!!! if new entry then set stock === quantity do this on api side
 //if product name doesnt exist throw error from client and api with message
@@ -106,6 +96,7 @@ export const BatchForm: React.FC<BatchFormProps> = ({
       }
     } catch (error: any) {
       toast.error('Something went wrong.');
+      console.log('Error: ', error)
     } finally {
       setLoading(false);
     }
@@ -140,7 +131,7 @@ export const BatchForm: React.FC<BatchFormProps> = ({
                 <FormItem>
                   <FormLabel>Cost</FormLabel>
                   <FormControl>
-                    <Input type="number" disabled={loading} placeholder="Supplier cost (£10)" {...field} />
+                    <Input type="number" disabled={loading} placeholder="Supplier cost (£)" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
