@@ -16,10 +16,13 @@ const BatchesPage = async ({
       storeId: params.storeId
     },
     include: {
-      category: true,
-      size: true,
-      color: true,
-      product: true
+      product: {
+        include: {
+          category: true,
+          size: true,
+          color: true,
+        },
+      },
     },
     orderBy: {
       createdAt: 'asc'
@@ -33,9 +36,9 @@ const BatchesPage = async ({
     supplierName: batch.supplierName,
     quantity: batch.quantity,
     stock: batch.stock,
-    category: batch.category.name,
-    size: batch.size.name,
-    color: batch.color.value,
+    category: batch.product.category.name,
+    size: batch.product.size.name,
+    color: batch.product.color.value,
     createdAt: format(batch.createdAt, 'MMMM do, yyyy'),
   }));
 

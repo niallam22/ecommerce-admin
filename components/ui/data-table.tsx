@@ -55,6 +55,7 @@ export function DataTable<TData, TValue>({
     },
     // enableRowSelection: true,
   });
+  const rowSelectionState = table.getState().rowSelection
 
   const handleRowClick = (row: Row<TData>) => {
 
@@ -87,14 +88,16 @@ export function DataTable<TData, TValue>({
       // If provided set the initialProductId as filter
       table.getColumn(searchKey)?.setFilterValue(initialProductId);
     }
-  },[])
+  }
+  ,[initialProductId]
+  )
 
   useEffect(() => {
     // calls onRowSelectionChange when state updated ensures state synced with table
     if (onRowSelectionChange) {
-      onRowSelectionChange(table.getState().rowSelection);
+      onRowSelectionChange(rowSelectionState);
     }
-  }, [table.getState().rowSelection, onRowSelectionChange]);
+  }, [rowSelectionState, onRowSelectionChange]);
 
   return (
     <div>
