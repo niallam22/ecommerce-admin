@@ -128,6 +128,19 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 405 });
     }
 
+    //prevent batch from being changed to a different pro
+    const batchByProductStore = await prismadb.batch.findFirst({
+      where: {
+        id: params.batchId,
+        storeId: params.storeId,
+        productId: productId,
+      }
+    });
+
+    if (!batchByProductStore) {
+      return new NextResponse("Product or store id do not match batch", { status: 400 });
+    }
+
     const batch = await prismadb.batch.update({
       where: {
         id: params.batchId

@@ -2,7 +2,7 @@
 
 import { Category, Color, Batch, Size, Product } from "@prisma/client"
 import { useEffect, useState } from "react";
-import { OnChangeFn, RowSelectionState, RowSelection } from "@tanstack/react-table";
+import { RowSelection } from "@tanstack/react-table";
 import axios from "axios"
 import { toast } from "react-hot-toast"
 import { useParams, useRouter } from "next/navigation";
@@ -16,8 +16,6 @@ import { Subheading } from "@/components/ui/subheading"
 import { BatchForm } from "./batch-form"
 import { AlertModal } from "@/components/modals/alert-modal";
 import { Button } from "@/components/ui/button"
-
-
 
 interface BatchEditProps {
   initialBatchData: Batch;
@@ -36,7 +34,6 @@ export const BatchEdit: React.FC<BatchEditProps> = ({
 }) => {
     const params = useParams();
     const router = useRouter();
-
 
     const [selectedRowData, setSelectedRowData] = useState<ProductColumn[]>([]);
     const [open, setOpen] = useState(false);
