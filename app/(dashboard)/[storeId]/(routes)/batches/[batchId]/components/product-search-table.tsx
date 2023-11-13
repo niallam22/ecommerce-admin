@@ -1,6 +1,5 @@
 "use client";
 import { RowSelection } from "@tanstack/react-table";
-import { useParams, useRouter } from "next/navigation";
 
 import { DataTable } from "@/components/ui/data-table";
 import { ProductColumn, columns } from "./columns";
@@ -17,8 +16,6 @@ export const ProductsSearchTable: React.FC<ProductsSearchTableProps> = ({
   onRowSelectionChange,
   initialBatchData
 }) => {
-  const params = useParams();
-  const router = useRouter();
 
   const initialProductId= initialBatchData?.productId
   
@@ -28,7 +25,6 @@ export const ProductsSearchTable: React.FC<ProductsSearchTableProps> = ({
       columns={columns} 
       data={data} 
       onRowSelectionChange={onRowSelectionChange}
-      // headerToggleSelectEnabled={false}
       initialProductId={initialProductId}
       />
   );
