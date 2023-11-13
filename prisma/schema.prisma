@@ -18,6 +18,7 @@ model Store {
   sizes           Size[]     @relation("StoreToSize")
   colors          Color[]     @relation("StoreToColor")
   orders          Order[]     @relation("StoreToOrder")
+  batches         Batch[]     @relation("StoreToBatch")
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
 }
@@ -43,6 +44,7 @@ model Category {
   billboard   Billboard   @relation(fields: [billboardId], references: [id])
   name        String
   products    Product[]   @relation("CategoryToProduct")
+  batches     Batch[]   // Relational key to Batch
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
@@ -51,23 +53,24 @@ model Category {
 }
 
 model Product {
-  id          String    @id @default(uuid())
-  storeId     String    // Foreign Key to Store
-  store       Store     @relation("StoreToProduct", fields: [storeId], references: [id])
-  categoryId  String    // Foreign Key to Category
-  category    Category  @relation("CategoryToProduct", fields: [categoryId], references: [id])
-  name        String
-  price       Decimal
-  isFeatured  Boolean   @default(false)
-  isArchived  Boolean   @default(false)
-  sizeId      String    // Foreign Key to Size
-  size        Size      @relation(fields: [sizeId], references: [id])
-  colorId     String    // Foreign Key to Color
-  color       Color     @relation(fields: [colorId], references: [id])
-  images      Image[]   // Relation to Image model
-  orderItems  OrderItem[]   // Relation to Order model
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id            String    @id @default(uuid())
+  storeId       String    // Foreign Key to Store
+  store         Store     @relation("StoreToProduct", fields: [storeId], references: [id])
+  categoryId    String    // Foreign Key to Category
+  category      Category  @relation("CategoryToProduct", fields: [categoryId], references: [id])
+  name          String
+  price         Decimal   
+  isFeatured    Boolean   @default(false)
+  isArchived    Boolean   @default(false)
+  sizeId        String    // Foreign Key to Size
+  size          Size      @relation(fields: [sizeId], references: [id])
+  colorId       String    // Foreign Key to Color
+  color         Color     @relation(fields: [colorId], references: [id])
+  images        Image[]   // Relation to Image model
+  orderItems    OrderItem[]  // Relation to Order model
+  batches       Batch[]   @relation("ProductToBatch")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   @@index([storeId])
   @@index([categoryId])
@@ -75,30 +78,64 @@ model Product {
   @@index([colorId])
 }
 
+model Batch {
+  id            String      @id @default(uuid())
+  storeId       String      // Relational Key to Store
+  store         Store       @relation("StoreToBatch", fields: [storeId], references: [id])
+  productId     String      // Relational Key to Product
+  product       Product     @relation("ProductToBatch",fields: [productId], references: [id], onDelete: Cascade)
+  sizeId        String      // Relational Key to Size
+  size          Size        @relation(fields: [sizeId], references: [id])
+  colorId       String      // Relational Key to Color
+  color         Color       @relation(fields: [colorId], references: [id])
+  categoryId    String      // Foreign Key to Category
+  category      Category    @relation(fields: [categoryId], references: [id])
+  // orderItemId   String
+  orderItems    OrderItem[] @relation("OrderItemToBatch")//use to trace specific order to batch !!!!need to filter by oldest batch when removing stock and create a separate orderItem if a new batch is created
+  supplierCost  Decimal     @default(0)   
+  quantity      Int         @default(0)   //purchase quantity from supplier
+  stock         Int         @default(0)       
+  supplierName  String       
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([storeId])
+  @@index([productId])
+  @@index([sizeId])
+  @@index([colorId])
+  @@index([categoryId])
+}
+
 model Order {
-  id        String    @id @default(uuid())
-  storeId     String    // Foreign Key to Store
-  store       Store     @relation("StoreToOrder", fields: [storeId], references: [id])
-  orderItems OrderItem[] // Relation to OrderItem model
-  isPaid     Boolean   @default(false)
-  phone      String    @default("")
-  address    String    @default("")
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id            String        @id @default(uuid())
+  storeId       String        // Relational Key to Store
+  store         Store         @relation("StoreToOrder", fields: [storeId], references: [id])
+  orderItems    OrderItem[]   // Relational key to OrderItem
+  isPaid        Boolean       @default(false)
+  // totalPricePaid  Decimal       //price incl. shipping and discount etc. Not in use yet!!!! 
+  phone         String        @default("")
+  address       String        @default("")
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
   @@index([storeId])
 }
 
 // Intermediary for a many-to-many relationship between Order and Product
 model OrderItem {
-  id        String  @id @default(uuid())
-  orderId   String  // Foreign Key to Order
-  order     Order   @relation(fields: [orderId], references: [id])
-  productId String  // Foreign Key to Product
-  product   Product @relation(fields: [productId], references: [id])
+  id              String  @id @default(uuid())
+  orderId         String  // Foreign Key to Order
+  order           Order   @relation(fields: [orderId], references: [id])
+  productId       String  // Foreign Key to Product
+  product         Product @relation(fields: [productId], references: [id])
+  // orderQuantity   Int     //!!!Not in use yet!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // pricePaid       Decimal     //!!!Not in use yet!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  batchId         String  
+  batch           Batch   @relation("OrderItemToBatch", fields: [batchId], references: [id]) 
 
   @@index([orderId])
   @@index([productId])
+  @@index([batchId])
 }
 
 model Size {
@@ -108,6 +145,7 @@ model Size {
   name        String
   value       String
   products    Product[] // 1 to many relation to Product model
+  batches     Batch[]   // Relational key to Batch
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -121,6 +159,7 @@ model Color {
   name        String
   value       String
   products    Product[] // Relation to Product model
+  batches     Batch[]   // Relational key to Batch
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 

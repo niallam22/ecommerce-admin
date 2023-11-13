@@ -76,6 +76,20 @@ export async function POST(
         },
       },
     });
+
+    const defaultBatch = await prismadb.batch.create({
+      data: {
+        // supplierCost:0,
+        // quantity:0,
+        // stock:0,
+        supplierName: '',
+        store: { connect: { id: params.storeId } },
+        product: { connect: { id: product.id } },
+        size: { connect: { id: product.sizeId } },
+        color: { connect: { id: product.colorId } },
+        category: { connect: { id: product.categoryId } },
+      }
+    });
   
     return NextResponse.json(product);
   } catch (error) {

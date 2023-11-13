@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -8,7 +8,10 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
+  Row,
+  RowSelection,
   useReactTable,
+  Header,
 } from "@tanstack/react-table"
 
 import {
@@ -25,13 +28,19 @@ import { Input } from "@/components/ui/input"
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[],
-  searchKey: string;
+  searchKey: string,
+  onRowSelectionChange?: (selectedRows: typeof RowSelection) => void,
+  // headerToggleSelectEnabled?: boolean //was used in product-search-table.tsx
+  initialProductId?: string
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   searchKey,
+  onRowSelectionChange,
+  // headerToggleSelectEnabled= false,
+  initialProductId,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const table = useReactTable({
@@ -43,8 +52,49 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     state: {
       columnFilters,
-    }
+    },
+    // enableRowSelection: true,
   });
+
+  const handleRowClick = (row: Row<TData>) => {
+
+      row.toggleSelected();
+      if (onRowSelectionChange) {
+        onRowSelectionChange(table.getState().rowSelection);
+      }
+  };
+
+  const handleHeaderClick = () => {
+      // if (headerToggleSelectEnabled) {
+        // If headerToggleSelectEnabled is true, update the state variable with selected rows
+        if (onRowSelectionChange) {
+          onRowSelectionChange(table.getState().rowSelection);
+        }
+      // }
+  };
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+
+    if (!initialProductId){
+      //enable searching by searchKey
+      table.getColumn(searchKey)?.setFilterValue(value);
+    }
+  };
+
+  useEffect(()=>{
+    if (initialProductId) {
+      // If provided set the initialProductId as filter
+      table.getColumn(searchKey)?.setFilterValue(initialProductId);
+    }
+  },[])
+
+  useEffect(() => {
+    // calls onRowSelectionChange when state updated ensures state synced with table
+    if (onRowSelectionChange) {
+      onRowSelectionChange(table.getState().rowSelection);
+    }
+  }, [table.getState().rowSelection, onRowSelectionChange]);
 
   return (
     <div>
@@ -52,9 +102,7 @@ export function DataTable<TData, TValue>({
         <Input
           placeholder="Search"
           value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn(searchKey)?.setFilterValue(event.target.value)
-          }
+          onChange={handleSearchChange}
           className="max-w-sm"
         />
       </div>
@@ -65,7 +113,10 @@ export function DataTable<TData, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead 
+                    key={header.id}
+                    onClick={() => handleHeaderClick()}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -84,6 +135,8 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  onClick={() => handleRowClick(row)}
+                  // onChange={() => handleRowClick(row)}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
