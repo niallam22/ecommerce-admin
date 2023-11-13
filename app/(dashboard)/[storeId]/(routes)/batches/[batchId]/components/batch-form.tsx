@@ -89,7 +89,6 @@ export const BatchForm: React.FC<BatchFormProps> = ({
   
   const onSubmit = async (data: BatchFormValues) => {
     const submitData = {productId: productId, ...data}
-    console.log('onSubmit batch-form triggered. Form submitData: ', submitData);
     
     try {
       setLoading(true);

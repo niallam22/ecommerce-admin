@@ -114,10 +114,6 @@ export async function PATCH(
       return new NextResponse("Size id is required", { status: 400 });
     }
 
-    if(typeof name === 'string'){
-      name.toLowerCase()
-    }
-
     const storeByUserId = await prismadb.store.findFirst({
       where: {
         id: params.storeId,

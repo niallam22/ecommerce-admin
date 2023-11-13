@@ -44,7 +44,6 @@ model Category {
   billboard   Billboard   @relation(fields: [billboardId], references: [id])
   name        String
   products    Product[]   @relation("CategoryToProduct")
-  batches     Batch[]   // Relational key to Batch
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
@@ -84,13 +83,6 @@ model Batch {
   store         Store       @relation("StoreToBatch", fields: [storeId], references: [id])
   productId     String      // Relational Key to Product
   product       Product     @relation("ProductToBatch",fields: [productId], references: [id], onDelete: Cascade)
-  sizeId        String      // Relational Key to Size
-  size          Size        @relation(fields: [sizeId], references: [id])
-  colorId       String      // Relational Key to Color
-  color         Color       @relation(fields: [colorId], references: [id])
-  categoryId    String      // Foreign Key to Category
-  category      Category    @relation(fields: [categoryId], references: [id])
-  // orderItemId   String
   orderItems    OrderItem[] @relation("OrderItemToBatch")//use to trace specific order to batch !!!!need to filter by oldest batch when removing stock and create a separate orderItem if a new batch is created
   supplierCost  Decimal     @default(0)   
   quantity      Int         @default(0)   //purchase quantity from supplier
@@ -101,9 +93,6 @@ model Batch {
 
   @@index([storeId])
   @@index([productId])
-  @@index([sizeId])
-  @@index([colorId])
-  @@index([categoryId])
 }
 
 model Order {
@@ -145,7 +134,6 @@ model Size {
   name        String
   value       String
   products    Product[] // 1 to many relation to Product model
-  batches     Batch[]   // Relational key to Batch
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -159,7 +147,6 @@ model Color {
   name        String
   value       String
   products    Product[] // Relation to Product model
-  batches     Batch[]   // Relational key to Batch
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
