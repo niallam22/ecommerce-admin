@@ -128,7 +128,7 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 405 });
     }
 
-    //prevent batch from being changed to a different pro
+    //check product and store match batch
     const batchByProductStore = await prismadb.batch.findFirst({
       where: {
         id: params.batchId,
