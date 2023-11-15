@@ -85,21 +85,21 @@ export async function POST(
 //   { params }: { params: { storeId: string } },
 // ) {
 //   try {
-
+//     const { searchParams } = new URL(req.url)
 //     if (!params.storeId) {
 //       return new NextResponse("Store id is required", { status: 400 });
 //     }
 
-//     const batches = await prismadb.batch.findMany({
-//       where: {
-//         storeId: params.storeId,
-//       },
-//       orderBy: {
-//         createdAt: 'desc',
-//       }
-//     });
+//     // const batches = await prismadb.batch.findMany({
+//     //   where: {
+//     //     storeId: params.storeId,
+//     //   },
+//     //   orderBy: {
+//     //     createdAt: 'desc',
+//     //   }
+//     // });
   
-//     return NextResponse.json(batches);
+//     return NextResponse.json(' batches/route.ts get batches end point hit');
 //   } catch (error) {
 //     console.log('[BATCHES_GET]', error);
 //     return new NextResponse("Internal error", { status: 500 });
