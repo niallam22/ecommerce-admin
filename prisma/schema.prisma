@@ -101,7 +101,8 @@ model Order {
   store         Store         @relation("StoreToOrder", fields: [storeId], references: [id])
   orderItems    OrderItem[]   // Relational key to OrderItem
   isPaid        Boolean       @default(false)
-  // totalPricePaid  Decimal       //price incl. shipping and discount etc. Not in use yet!!!! 
+  // totalPrice  Decimal       //price incl. shipping and discount, Vat etc. Not in use yet!!!! 
+  // shippingPrice  Decimal
   phone         String        @default("")
   address       String        @default("")
   createdAt     DateTime      @default(now())
