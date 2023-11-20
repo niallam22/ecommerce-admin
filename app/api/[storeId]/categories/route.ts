@@ -70,7 +70,7 @@ export async function GET(
         storeId: params.storeId
       }
     });
-  
+    
     return NextResponse.json(categories);
   } catch (error) {
     console.log('[CATEGORIES_GET]', error);
