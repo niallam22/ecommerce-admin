@@ -34,8 +34,7 @@ export async function POST(req: Request) {
   ];
 
   const addressString = addressComponents.filter((c) => c !== null).join(', ');
-
-
+  console.log('webhook triggered. Event.type: ', event.type)
   if (event.type === "checkout.session.completed") {
     const order = await prismadb.order.update({
       where: {
@@ -45,25 +44,90 @@ export async function POST(req: Request) {
         isPaid: true,
         address: addressString,
         phone: session?.customer_details?.phone || '',
+        email: session?.customer_details?.email || '',
       },
       include: {
         orderItems: true,
       }
     });
 
-    const productIds = order.orderItems.map((orderItem) => orderItem.productId);
-
-    await prismadb.product.updateMany({
+    const orderItems = await prismadb.orderItem.findMany({
       where: {
-        id: {
-          in: [...productIds],
-        },
-      },
-      data: {
-        isArchived: true
+        orderId: session?.metadata?.orderId,
       }
     });
-  }
+
+    //if successful remove stock from batch and create (many-to-many) connection between batch and orderItem
+    for (const item of orderItems) {
+      const productId = item.productId;
+      const productQuantity = item.quantity;
+      let remainingQuantity = productQuantity;
+  
+      // Find all batches associated with the product, ordered by creation date ascending
+      const batches = await prismadb.batch.findMany({
+        where: {
+          productId: productId,
+        },
+        orderBy: {
+          createdAt: 'asc',
+        },
+      });
+
+      //potentially multiple batches for each product hence nested loops
+      for (const batch of batches) {
+        const batchId = batch.id;
+        const batchStock = batch.stock;
+  
+        // Calculate how much stock to subtract from this batch (ie if batchStock is smaller then you can only subtract the batchStock that is remaining)
+        const stockToSubtract = Math.min(remainingQuantity, batchStock);
+  
+        // Update batch stock
+        await prismadb.batch.update({
+          where: { id: batchId },
+          data: { stock: batchStock - stockToSubtract },
+        });
+
+        //OrderItem associated with product in current product loop
+        const orderItem = await prismadb.orderItem.findFirst({
+          where: {
+            productId: productId,
+            orderId: order.id
+          }
+        });
+  
+        if (orderItem) {
+          // Update OrderItem with the batchId from current batch loop
+          const updatedOrderItem = await prismadb.orderItem.update({
+            where: {
+              id: orderItem.id,
+            },
+            data: {
+              batches: {
+                connect: [{ id: batchId }],
+              },
+            },
+          });
+      
+          // Check if the update was successful
+          if (updatedOrderItem) {
+            console.log(`Updated OrderItem ${updatedOrderItem.id} with BatchId ${batchId}`);
+          } else {
+            console.error('Failed to update OrderItem with BatchId');
+          }
+        } else {
+          console.error(`OrderItem not found for ProductId: ${productId} and BatchId: ${batchId}`);
+        }
+        
+        // Update remaining quantity
+        remainingQuantity -= stockToSubtract;
+  
+        // If remaining quantity is zero, break out of the loop
+        if (remainingQuantity === 0) {
+          break;
+        }
+      }
+    }
+}
 
   return new NextResponse(null, { status: 200 });
 };
