@@ -141,6 +141,9 @@ export async function POST(
     line_items,
     mode: 'payment',
     billing_address_collection: 'required',
+    shipping_address_collection: {
+      allowed_countries: ['US', 'CA', 'GB', 'AU'], 
+    },
     phone_number_collection: {
       enabled: true,
     },
