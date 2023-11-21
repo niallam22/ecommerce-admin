@@ -147,83 +147,9 @@ export async function POST(
     success_url: `${process.env.FRONT_END_STORE_URL}/cart?success=1`,
     cancel_url: `${process.env.FRONT_END_STORE_URL}/cart?canceled=1`,
     metadata: {
-      orderId: order.id
+      orderId: order.id,     
     },
   });
-
-  //if successful remove stock from batch and create many-to-many connection between batch and orderItem
-  if (session.status === 'complete') {
-    for (const product of productsQuantityStock) {
-      const productId = product.id;
-      const productQuantity = product.quantity;
-  
-      // Fetch batches associated with the product, ordered by creation date ascending
-      const batches = await prismadb.batch.findMany({
-        where: {
-          productId: productId,
-        },
-        orderBy: {
-          createdAt: 'asc',
-        },
-      });
-  
-      let remainingQuantity = productQuantity;
-
-      //potentially multiple batches for each product hence nested loops
-      for (const batch of batches) {
-        const batchId = batch.id;
-        const batchStock = batch.stock;
-  
-        // Calculate how much stock to subtract from this batch (ie if batchStock is smaller then you can only subtract the batchStock that is remaining)
-        const stockToSubtract = Math.min(remainingQuantity, batchStock);
-  
-        // Update batch stock
-        await prismadb.batch.update({
-          where: { id: batchId },
-          data: { stock: batchStock - stockToSubtract },
-        });
-
-        //OrderItem associated with product in current product loop
-        const orderItem = await prismadb.orderItem.findFirst({
-          where: {
-            productId: productId,
-            orderId: order.id
-          }
-        });
-  
-        if (orderItem) {
-          // Update OrderItem with the batchId from current batch loop
-          const updatedOrderItem = await prismadb.orderItem.update({
-            where: {
-              id: orderItem.id,
-            },
-            data: {
-              batches: {
-                connect: [{ id: batchId }],
-              },
-            },
-          });
-      
-          // Check if the update was successful
-          if (updatedOrderItem) {
-            console.log(`Updated OrderItem ${updatedOrderItem.id} with BatchId ${batchId}`);
-          } else {
-            console.error('Failed to update OrderItem with BatchId');
-          }
-        } else {
-          console.error(`OrderItem not found for ProductId: ${productId} and BatchId: ${batchId}`);
-        }
-        
-        // Update remaining quantity
-        remainingQuantity -= stockToSubtract;
-  
-        // If remaining quantity is zero, break out of the loop
-        if (remainingQuantity === 0) {
-          break;
-        }
-      }
-    }
-  }
 
   return NextResponse.json({ url: session.url },
     {

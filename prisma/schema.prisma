@@ -105,6 +105,7 @@ model Order {
   subtotalPrice Decimal 
   shippingPrice Decimal
   vatTotal      Decimal
+  email         String        @default("")
   phone         String        @default("")
   address       String        @default("")
   createdAt     DateTime      @default(now())
