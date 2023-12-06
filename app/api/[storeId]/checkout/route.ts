@@ -23,8 +23,6 @@ export async function POST(
     quantity: number;
   }
   const { items } = await req.json();
-  const shippingPrice = 3.25
-  const vat = 0.2
   
   const hasErrorQuantities = items.some((item: Item )=> item.quantity === 0 || typeof item.quantity !== 'number' || item.quantity < 0)
 
@@ -74,9 +72,14 @@ export async function POST(
     return new NextResponse("Product quantity exceeds available stock", { status: 400 });
   }
 
-  const subTotal = productsWithQuantity.reduce((accum, product) => accum + product.price.toNumber() * product.quantity, 0) + shippingPrice
-  const vatTotal = vat * subTotal
-  const totalPrice = vatTotal + subTotal + shippingPrice
+  // const shippingPrice = 3.25
+  // const vat = 0.2
+  // const subTotal = productsWithQuantity.reduce((accum, product) => accum + product.price.toNumber() * product.quantity, 0) + shippingPrice
+  // const vatTotal = vat * subTotal
+  // const totalPrice = vatTotal + subTotal + shippingPrice
+
+  const totalPrice = productsWithQuantity.reduce((accum, product) => accum + product.price.toNumber() * product.quantity, 0)
+
   
   const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
 
@@ -88,31 +91,10 @@ export async function POST(
         product_data: {
           name: product.name,
         },
-        unit_amount: Math.round(product.price.toNumber() * 100)
-      }
+        unit_amount: Math.round(product.price.toNumber() * 100),
+      },
+      tax_rates: ['txr_1OJjOiEdeGNb3i8aDrs93JAN'],
     });
-  });
-
-  line_items.push({
-    quantity: 1,
-    price_data: {
-      currency: 'GBP',
-      product_data: {
-        name: "shipping",
-      },
-      unit_amount: Math.round(shippingPrice * 100)
-    }
-  });
-
-  line_items.push({
-    quantity: 1,
-    price_data: {
-      currency: 'GBP',
-      product_data: {
-        name: "VAT",
-      },
-      unit_amount: Math.round(vatTotal * 100)
-    }
   });
 
   const order = await prismadb.order.create({
@@ -120,9 +102,9 @@ export async function POST(
       storeId: params.storeId,
       isPaid: false,
       totalPrice: totalPrice,
-      subtotalPrice: subTotal,
-      shippingPrice: shippingPrice,
-      vatTotal: vatTotal,
+      // subtotalPrice: subTotal,
+      // shippingPrice: shippingPrice,
+      // vatTotal: vatTotal,
       orderItems: {
         create: productsWithQuantity.map((product) => ({
           product: {
@@ -136,7 +118,7 @@ export async function POST(
       }
     }
   });
-  
+
   const session = await stripe.checkout.sessions.create({
     line_items,
     mode: 'payment',
@@ -149,6 +131,56 @@ export async function POST(
     metadata: {
       orderId: order.id,     
     },
+    shipping_address_collection: {
+      allowed_countries: [ 'GB' ], 
+    },
+    shipping_options: [
+      {
+        shipping_rate: totalPrice>20?'shr_1OJuGyEdeGNb3i8aKBTtGusz': 'shr_1OJuMsEdeGNb3i8arcvnx84R' //free || £5.50
+      }
+    ]
+    // shipping_options: [
+    //   {
+    //     shipping_rate_data: {
+    //       type: 'fixed_amount',
+    //       fixed_amount: {
+    //         amount: 0,
+    //         currency: 'gbp',
+    //       },
+    //       display_name: 'Free shipping',
+    //       delivery_estimate: {
+    //         minimum: {
+    //           unit: 'business_day',
+    //           value: 5,
+    //         },
+    //         maximum: {
+    //           unit: 'business_day',
+    //           value: 7,
+    //         },
+    //       },
+    //     },
+    //   },
+    //   {
+    //     shipping_rate_data: {
+    //       type: 'fixed_amount',
+    //       fixed_amount: {
+    //         amount: 1500,
+    //         currency: 'gbp',
+    //       },
+    //       display_name: 'Next day air',
+    //       delivery_estimate: {
+    //         minimum: {
+    //           unit: 'business_day',
+    //           value: 1,
+    //         },
+    //         maximum: {
+    //           unit: 'business_day',
+    //           value: 1,
+    //         },
+    //       },
+    //     },
+    //   },
+    // ],
   });
 
   return NextResponse.json({ url: session.url },
