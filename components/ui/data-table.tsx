@@ -77,10 +77,10 @@ export function DataTable<TData, TValue>({
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
 
-    if (!initialProductId){
+    // if (!initialProductId){
       //enable searching by searchKey
       table.getColumn(searchKey)?.setFilterValue(value);
-    }
+    // }
   };
 
   useEffect(()=>{
