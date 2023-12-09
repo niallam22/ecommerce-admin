@@ -25,35 +25,6 @@ const OrdersPage = async ({
     }
   });
 
-  const getStatus = (order) => {
-    const isPaid = order.isPaid;
-    const hasOrderedItems = order.orderItems.some((orderItem) => orderItem.status === "ordered");
-    const allShipped = order.orderItems.every((orderItem) => orderItem.status === "shipped");
-    const allReturnInProgress = order.orderItems.every((orderItem) => orderItem.status === "return in progress");
-    const hasReturnInProgress = order.orderItems.some((orderItem) => orderItem.status === "return in progress");
-    const allReturnComplete = order.orderItems.every((orderItem) => orderItem.status === "return complete");
-    const hasReturnComplete = order.orderItems.some((orderItem) => orderItem.status === "return complete");
-  
-    if (!isPaid) {
-      return 'pending payment';
-    } else if (hasOrderedItems) {
-      return 'ordered';
-    } else if (allShipped) {
-      return 'shipped';
-    } else if (allReturnInProgress) {
-      return 'full return in progress';
-    } else if (hasReturnInProgress) {
-      return 'partial return in progress';
-    } else if (allReturnComplete) {
-      return 'full return complete';
-    } else if (hasReturnComplete) {
-      return 'partial return complete';
-    } else {
-      return '';
-    }
-  };
-
-
   const formattedOrders: OrderColumn[] = orders.map((item) => ({
     id: item.id,
     phone: item.phone,
