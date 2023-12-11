@@ -117,14 +117,16 @@ model Order {
 
 // Intermediary for a many-to-many relationship between Order and Product
 model OrderItem {
-  id              String  @id @default(uuid())
-  orderId         String  // Foreign Key to Order
-  order           Order   @relation(fields: [orderId], references: [id])
-  productId       String  // Foreign Key to Product
-  product         Product @relation(fields: [productId], references: [id])
-  quantity        Int     
-  productPrice    Decimal // Price at payment 
-  batches         Batch[]  @relation("OrderItemToBatch") // Many-to-many relationship
+  id                      String  @id @default(uuid())
+  orderId                 String  // Foreign Key to Order
+  order                   Order   @relation(fields: [orderId], references: [id])
+  productId               String  // Foreign Key to Product
+  product                 Product @relation(fields: [productId], references: [id])
+  quantity                Int     
+  productPrice            Decimal // Price at payment 
+  batches                 Batch[] @relation("OrderItemToBatch") // Many-to-many relationship
+  status                  String  @default("pending")
+  supplierConfirmationId  String  @default("")
 
   @@index([orderId])
   @@index([productId])

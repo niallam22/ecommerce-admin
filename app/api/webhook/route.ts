@@ -45,6 +45,16 @@ export async function POST(req: Request) {
         address: addressString,
         phone: session?.customer_details?.phone || '',
         email: session?.customer_details?.email || '',
+        orderItems: {
+          updateMany: {
+            where: {
+              orderId: session?.metadata?.orderId,
+            },
+            data: {
+              status: 'ordered',
+            },
+          },
+        },
       },
       include: {
         orderItems: true,

@@ -1,11 +1,8 @@
 import { format } from "date-fns";
 
 import prismadb from "@/lib/prismadb";
-import { formatter } from "@/lib/utils";
-
 import { OrderColumn } from "./components/columns"
 import { OrderClient } from "./components/client";
-
 
 const OrdersPage = async ({
   params
@@ -19,7 +16,7 @@ const OrdersPage = async ({
     include: {
       orderItems: {
         include: {
-          product: true
+          product: true,
         }
       }
     },
@@ -31,13 +28,19 @@ const OrdersPage = async ({
   const formattedOrders: OrderColumn[] = orders.map((item) => ({
     id: item.id,
     phone: item.phone,
+    email: item.email,
     address: item.address,
     products: item.orderItems.map((orderItem) => orderItem.product.name).join(', '),
-    totalPrice: formatter.format(item.orderItems.reduce((total, item) => {
-      return total + Number(item.product.price)
-    }, 0)),
+    totalPrice: String(item.totalPrice),
     isPaid: item.isPaid,
     createdAt: format(item.createdAt, 'MMMM do, yyyy'),
+    status:   item.isPaid ===false ? 'pending payment' :
+    item.orderItems.some((orderItem)=> orderItem.status === "ordered")? "ordered" :
+    item.orderItems.every((orderItem)=> orderItem.status === "shipped")? "shipped" :
+    item.orderItems.every((orderItem)=> orderItem.status === "return in progress") ? "full return in progress" :
+    item.orderItems.some((orderItem)=> orderItem.status === "return in progress") ? "partial return in progress" :
+    item.orderItems.every((orderItem)=> orderItem.status === "return complete") ? "full return complete" :
+    item.orderItems.some((orderItem)=> orderItem.status === "return complete") ? "partial return complete" : '',
   }));
 
   return (
