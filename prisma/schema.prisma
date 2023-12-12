@@ -103,8 +103,8 @@ model Order {
   orderItems    OrderItem[]   // Relational key to OrderItem
   isPaid        Boolean       @default(false)
   totalPrice    Decimal       //price incl. shipping and discount, Vat etc. 
-  // subtotalPrice Decimal 
-  // shippingPrice Decimal
+  subtotalPrice Decimal       
+  shippingPrice Decimal       
   // vatTotal      Decimal
   email         String        @default("")
   phone         String        @default("")

@@ -78,8 +78,20 @@ export async function POST(
   // const vatTotal = vat * subTotal
   // const totalPrice = vatTotal + subTotal + shippingPrice
 
-  const totalPrice = productsWithQuantity.reduce((accum, product) => accum + product.price.toNumber() * product.quantity, 0)
+  const subTotal = productsWithQuantity.reduce((accum, product) => accum + product.price.toNumber() * product.quantity, 0)
+  const shippingOptions = [{
+    id:'shr_1OJuGyEdeGNb3i8aKBTtGusz',
+    price: 0,
+  },
+  {
+    id:'shr_1OJuMsEdeGNb3i8arcvnx84R',
+    price: 5.50,
+  }
+]
+  const shippingPrice = subTotal>20? shippingOptions[0].price: shippingOptions[1].price //free || £5.50
+  const shippingId = subTotal>20? shippingOptions[0].id: shippingOptions[1].id //free || £5.50
 
+  const totalPrice = subTotal + shippingPrice
   
   const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
 
@@ -102,9 +114,8 @@ export async function POST(
       storeId: params.storeId,
       isPaid: false,
       totalPrice: totalPrice,
-      // subtotalPrice: subTotal,
-      // shippingPrice: shippingPrice,
-      // vatTotal: vatTotal,
+      subtotalPrice: subTotal,
+      shippingPrice: shippingPrice,
       orderItems: {
         create: productsWithQuantity.map((product) => ({
           product: {
@@ -136,7 +147,7 @@ export async function POST(
     },
     shipping_options: [
       {
-        shipping_rate: totalPrice>20?'shr_1OJuGyEdeGNb3i8aKBTtGusz': 'shr_1OJuMsEdeGNb3i8arcvnx84R' //free || £5.50
+        shipping_rate: shippingId
       }
     ]
     // shipping_options: [
