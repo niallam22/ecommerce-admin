@@ -80,16 +80,16 @@ export async function POST(
 
   const subTotal = productsWithQuantity.reduce((accum, product) => accum + product.price.toNumber() * product.quantity, 0)
   const shippingOptions = [{
-    id:'shr_1OJuGyEdeGNb3i8aKBTtGusz',
+    id:'shr_1OXjmrEdeGNb3i8agE2fgW39',
     price: 0,
   },
   {
-    id:'shr_1OJuMsEdeGNb3i8arcvnx84R',
+    id:'shr_1OXjo7EdeGNb3i8aW7bLAAtJ',
     price: 5.50,
   }
 ]
-  const shippingPrice = subTotal>20? shippingOptions[0].price: shippingOptions[1].price //free || £5.50
-  const shippingId = subTotal>20? shippingOptions[0].id: shippingOptions[1].id //free || £5.50
+  const shippingPrice = subTotal>=1? shippingOptions[0].price: shippingOptions[1].price //free || £5.50
+  const shippingId = subTotal>=1? shippingOptions[0].id: shippingOptions[1].id //free || £5.50
 
   const totalPrice = subTotal + shippingPrice
   
@@ -105,7 +105,7 @@ export async function POST(
         },
         unit_amount: Math.round(product.price.toNumber() * 100),
       },
-      tax_rates: ['txr_1OJjOiEdeGNb3i8aDrs93JAN'],
+      tax_rates: ['txr_1OXjkDEdeGNb3i8aBWPD7qSv'],
     });
   });
 
