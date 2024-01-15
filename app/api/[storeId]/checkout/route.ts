@@ -88,6 +88,7 @@ export async function POST(
     price: 5.50,
   }
 ]
+
   const shippingPrice = subTotal>20? shippingOptions[0].price: shippingOptions[1].price //free || £5.50
   const shippingId = subTotal>20? shippingOptions[0].id: shippingOptions[1].id //free || £5.50
 
