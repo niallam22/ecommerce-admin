@@ -80,16 +80,16 @@ export async function POST(
 
   const subTotal = productsWithQuantity.reduce((accum, product) => accum + product.price.toNumber() * product.quantity, 0)
   const shippingOptions = [{
-    id:'shr_1OXjmrEdeGNb3i8agE2fgW39',
+    id: process.env.SHIPPING_RATE_ID_1,
     price: 0,
   },
   {
-    id:'shr_1OXjo7EdeGNb3i8aW7bLAAtJ',
+    id:process.env.SHIPPING_RATE_ID_2,
     price: 5.50,
   }
 ]
-  const shippingPrice = subTotal>1? shippingOptions[0].price: shippingOptions[1].price //free || £5.50
-  const shippingId = subTotal>1? shippingOptions[0].id: shippingOptions[1].id //free || £5.50
+  const shippingPrice = subTotal>=1? shippingOptions[0].price: shippingOptions[1].price //free || £5.50
+  const shippingId = subTotal>=1? shippingOptions[0].id: shippingOptions[1].id //free || £5.50
 
   const totalPrice = subTotal + shippingPrice
   
