@@ -1,92 +1,30 @@
-# Full Stack E-Commerce + Dashboard & CMS: Next.js 13 App Router, React, Tailwind, Prisma, MySQL, 2023
+# Full Stack E-Commerce Admin Dashboard & CMS: 
 
-![Copy of Copy of Fullstack Twitter Clone (1)](https://github.com/AntonioErdeljac/next13-ecommerce-admin/assets/23248726/088760cb-837d-44b7-a959-63089385d0a0)
+E-commerce admin is an administrative platform where users can create and manage multiple e-commerce stores, including product info, stock availability, sales report and more. This app also automatically generates APIs to connect to a headless front-end ecommerce UI to display products and manage payments from customers.
 
+### Link to project: [E-commerce Admin](https://ecommerce-admin-cms-dashboard.vercel.app/)
+![E-commerce Admin](ecommerceAdmin.gif?raw=true "E-commerce Admin")
 
-For DEMO, use [Stripe Testing Cards](https://stripe.com/docs/testing)
+## Tech
 
-This is a repository for a Full Stack E-Commerce + Dashboard & CMS: Next.js 13 App Router, React, Tailwind, Prisma, MySQL
+TypeScript, Next.js 13, React, Tailwind, Prisma, MySQL, 
 
-[VIDEO TUTORIAL](https://youtu.be/5miHyP6lExg)
+## Key Features
 
-Key Features:
-
-- We will be using Shadcn UI for the Admin!
-- Our admin dashboard is going to serve as both CMS, Admin and API!
-- You will be able to control mulitple vendors / stores through this single CMS! (For example you can have a "Shoe store" and a "Laptop store" and a "Suit store", and our CMS will generate API routes for all of those individually!)
-- You will be able to create, update and delete categories!
-- You will be able to create, update and delete products!
-- You will be able to upload multiple images for products, and change them whenever you want!
-- You will be able to create, update and delete filters such as "Color" and "Size", and then match them in the "Product" creation form.
-- You will be able to create, update and delete "Billboards" which are these big texts on top of the page. You will be able to attach them to a single category, or use them standalone (Our Admin generates API for all of those cases!)
-- You will be able to Search through all categories, products, sizes, colors, billboards with included pagination!
-- You will be able to control which products are "featured" so they show on the homepage!
-- You will be able to see your orders, sales, etc.
-- You will be able to see graphs of your revenue etc.
-- You will learn Clerk Authentication!
-- Order creation
+- Clerk Auth sign in protection
+- Create mulitple stores through single CMS (e.g. for a "Shoe store", a "Laptop store" and a "Suit store", the CMS will generate API routes for all of those individually)
+- View sales revenue in a dynamically generated and intuitive dashboard/graph
+- Create, update and delete categories
+- Create, update and delete products
+- Upload multiple images for products and add product information
+- Add batch information with integrated batch order traceability from batch to delivery using relational db
+- Create, update and delete filters such as "Color" and "Size" for products
+- Create, update and delete marketing "Billboards" for web pages
+- Search through all categories, products, sizes, colors, billboards with included pagination
+- Control which products are "featured" to display on the homepage
+- Customisable light and dark themes
+- Order creation and management system to collect user info and record delivery/payment status
 - Stripe checkout
 - Stripe webhooks
-- MySQL + Prisma + PlanetScale
+- DB is built withMySQL + Prisma + PlanetScale
 
-### Prerequisites
-
-**Node version 14.x**
-
-### Cloning the repository
-
-```shell
-git clone https://github.com/AntonioErdeljac/next13-ecommerce-admin.git
-```
-
-### Install packages
-
-```shell
-npm i
-```
-
-### Setup .env file
-
-
-```js
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
-CLERK_SECRET_KEY=
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
-NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
-
-# This was inserted by `prisma init`:
-# Environment variables declared in this file are automatically made available to Prisma.
-# See the documentation for more detail: https://pris.ly/d/prisma-schema#accessing-environment-variables-from-the-schema
-
-# Prisma supports the native connection string format for PostgreSQL, MySQL, SQLite, SQL Server, MongoDB and CockroachDB.
-# See the documentation for all the connection string options: https://pris.ly/d/connection-strings
-
-DATABASE_URL=''
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=""
-STRIPE_API_KEY=
-FRONTEND_STORE_URL=http://localhost:3001
-STRIPE_WEBHOOK_SECRET=
-```
-
-### Connect to PlanetScale and Push Prisma
-```shell
-npx prisma generate
-npx prisma db push
-```
-
-
-### Start the app
-
-```shell
-npm run dev
-```
-
-## Available commands
-
-Running commands with npm `npm run [command]`
-
-| command         | description                              |
-| :-------------- | :--------------------------------------- |
-| `dev`           | Starts a development instance of the app |
