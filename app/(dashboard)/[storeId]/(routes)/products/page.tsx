@@ -19,6 +19,11 @@ const ProductsPage = async ({
       category: true,
       size: true,
       color: true,
+      batches: {
+        select: {
+          stock: true,
+        },
+      },
     },
     orderBy: {
       createdAt: 'desc'
@@ -33,6 +38,7 @@ const ProductsPage = async ({
     price: formatter.format(item.price.toNumber()),
     category: item.category.name,
     size: item.size.name,
+    stock: String(item.batches.reduce((total, batch) => total + batch.stock, 0)),
     color: item.color.value,
     createdAt: format(item.createdAt, 'MMMM do, yyyy'),
   }));
