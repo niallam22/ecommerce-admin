@@ -11,6 +11,7 @@ export type ProductColumn = {
   category: string;
   size: string;
   color: string;
+  stock: string;
   createdAt: string;
   isFeatured: boolean;
   isArchived: boolean;
@@ -50,6 +51,10 @@ export const columns: ColumnDef<ProductColumn>[] = [
         <div className="h-6 w-6 rounded-full border" style={{ backgroundColor: row.original.color }} />
       </div>
     )
+  },  
+  {
+    accessorKey: "stock",
+    header: "Stock",
   },
   {
     accessorKey: "createdAt",
