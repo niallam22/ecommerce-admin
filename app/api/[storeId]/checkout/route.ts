@@ -72,12 +72,6 @@ export async function POST(
     return new NextResponse("Product quantity exceeds available stock", { status: 400 });
   }
 
-  // const shippingPrice = 3.25
-  // const vat = 0.2
-  // const subTotal = productsWithQuantity.reduce((accum, product) => accum + product.price.toNumber() * product.quantity, 0) + shippingPrice
-  // const vatTotal = vat * subTotal
-  // const totalPrice = vatTotal + subTotal + shippingPrice
-
   const subTotal = productsWithQuantity.reduce((accum, product) => accum + product.price.toNumber() * product.quantity, 0)
   const shippingOptions = [{
     id: process.env.SHIPPING_RATE_ID_1,
@@ -89,8 +83,8 @@ export async function POST(
   }
 ]
 
-  const shippingPrice = subTotal>20? shippingOptions[0].price: shippingOptions[1].price //free || £5.50
-  const shippingId = subTotal>20? shippingOptions[0].id: shippingOptions[1].id //free || £5.50
+  const shippingPrice = subTotal>=1? shippingOptions[0].price: shippingOptions[1].price //free || £5.50
+  const shippingId = subTotal>=1? shippingOptions[0].id: shippingOptions[1].id //free || £5.50
 
   const totalPrice = subTotal + shippingPrice
   
@@ -151,48 +145,6 @@ export async function POST(
         shipping_rate: shippingId
       }
     ]
-    // shipping_options: [
-    //   {
-    //     shipping_rate_data: {
-    //       type: 'fixed_amount',
-    //       fixed_amount: {
-    //         amount: 0,
-    //         currency: 'gbp',
-    //       },
-    //       display_name: 'Free shipping',
-    //       delivery_estimate: {
-    //         minimum: {
-    //           unit: 'business_day',
-    //           value: 5,
-    //         },
-    //         maximum: {
-    //           unit: 'business_day',
-    //           value: 7,
-    //         },
-    //       },
-    //     },
-    //   },
-    //   {
-    //     shipping_rate_data: {
-    //       type: 'fixed_amount',
-    //       fixed_amount: {
-    //         amount: 1500,
-    //         currency: 'gbp',
-    //       },
-    //       display_name: 'Next day air',
-    //       delivery_estimate: {
-    //         minimum: {
-    //           unit: 'business_day',
-    //           value: 1,
-    //         },
-    //         maximum: {
-    //           unit: 'business_day',
-    //           value: 1,
-    //         },
-    //       },
-    //     },
-    //   },
-    // ],
   });
 
   return NextResponse.json({ url: session.url },
